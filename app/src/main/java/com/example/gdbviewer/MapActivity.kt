@@ -25,7 +25,7 @@ import com.example.gdbviewer.map.EsriWorldImagery
 import com.example.gdbviewer.style.DefaultPalette
 import com.example.gdbviewer.style.LayerStyle
 import com.example.gdbviewer.style.MarkerIconFactory
-import mil.nga.geopackage.factory.GeoPackageFactory
+import mil.nga.geopackage.GeoPackageFactory
 import mil.nga.geopackage.features.user.FeatureCursor
 import mil.nga.geopackage.features.user.FeatureDao
 import mil.nga.sf.GeometryType
@@ -266,7 +266,7 @@ class MapActivity : AppCompatActivity() {
         for (layerName in layerNames) {
             val featureDao: FeatureDao = geoPackage.getFeatureDao(layerName)
             val cursor: FeatureCursor = if (filtered != null && filtered.first == layerName) {
-                featureDao.queryForAll(filtered.second) // where clause cruda
+                featureDao.query(filtered.second) // where clause cruda
             } else {
                 featureDao.queryForAll()
             }

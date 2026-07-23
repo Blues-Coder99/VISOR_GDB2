@@ -11,7 +11,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gdbviewer.databinding.ActivityAttributeTableBinding
-import mil.nga.geopackage.factory.GeoPackageFactory
+import mil.nga.geopackage.GeoPackageFactory
 import java.io.File
 
 /**

@@ -58,7 +58,7 @@ object DigitizingHelper {
     fun insertPoint(geoPackage: GeoPackage, tableName: String, lon: Double, lat: Double, attributes: Map<String, String>) {
         val featureDao = geoPackage.getFeatureDao(tableName)
         val row = featureDao.newRow()
-        val geomData = GeoPackageGeometryData(WGS84_EPSG.toInt())
+        val geomData = GeoPackageGeometryData(WGS84_EPSG)
         geomData.geometry = Point(lon, lat)
         row.geometry = geomData
         applyAttributes(row, featureDao.columnNames.toSet(), attributes)
@@ -71,7 +71,7 @@ object DigitizingHelper {
         val row = featureDao.newRow()
         val line = LineString()
         for ((lon, lat) in vertices) line.addPoint(Point(lon, lat))
-        val geomData = GeoPackageGeometryData(WGS84_EPSG.toInt())
+        val geomData = GeoPackageGeometryData(WGS84_EPSG)
         geomData.geometry = line
         row.geometry = geomData
         applyAttributes(row, featureDao.columnNames.toSet(), attributes)
@@ -95,7 +95,7 @@ object DigitizingHelper {
             polygon.addRing(ring)
         }
 
-        val geomData = GeoPackageGeometryData(WGS84_EPSG.toInt())
+        val geomData = GeoPackageGeometryData(WGS84_EPSG)
         geomData.geometry = polygon
         row.geometry = geomData
         applyAttributes(row, featureDao.columnNames.toSet(), attributes)
