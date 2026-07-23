@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_filter"
+        android:title="Filtrar"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_basemap"
+        android:title="Cambiar mapa base"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_gps"
+        android:title="Mi ubicación"
+        android:icon="@android:drawable/ic_menu_mylocation"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_measure"
+        android:title="Medir distancia"
+        android:icon="@android:drawable/ic_menu_directions"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_table"
+        android:title="Tabla de atributos"
+        android:icon="@android:drawable/ic_menu_agenda"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_create_layer"
+        android:title="Crear capa"
+        android:icon="@android:drawable/ic_menu_add"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_save_geometry"
+        android:title="Guardar geometría"
+        android:icon="@android:drawable/ic_menu_save"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_cancel_digitize"
+        android:title="Cancelar digitalización"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+</menu>

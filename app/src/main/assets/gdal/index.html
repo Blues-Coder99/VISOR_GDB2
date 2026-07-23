@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Conversor GDB → GPKG (gdal3.js)</title>
+    <!--
+        PENDIENTE (paso 1): descargar el paquete npm "gdal3.js" (https://github.com/bugra9/gdal3.js)
+        y copiar aquí, junto a este archivo, los siguientes archivos de su carpeta dist/package/:
+            gdal3.js
+            gdal3WebAssembly.js
+            gdal3WebAssembly.wasm
+            gdal3WebAssembly.data
+        Pesan varias decenas de MB en total — por eso no vienen incluidos en este proyecto.
+
+        PENDIENTE (paso 2): agregar una librería de descompresión ZIP en JS (ej. fflate,
+        https://github.com/101arrowz/fflate) para extraer los archivos internos del .gdb
+        antes de pasárselos a Gdal.open() — un .gdb es una CARPETA con varios archivos
+        binarios (.gdbtable, .gdbtablx, .gdbindexes, etc.), no un solo archivo. Ese paso
+        de descompresión todavía no está escrito (ver TODO más abajo).
+    -->
+    <script src="gdal3.js"></script>
+    <!-- <script src="fflate.js"></script> -->
+</head>
+<body>
+<script>
+    let gdalPromise = null;
+
+    function ensureGdal() {
+        if (!gdalPromise) {
+            gdalPromise = initGdalJs({
+                paths: {
+                    wasm: 'gdal3WebAssembly.wasm',
+                    data: 'gdal3WebAssembly.data',
+                    js: 'gdal3WebAssembly.js'
+                }
+            });
+        }
+        return gdalPromise;
+    }
+
+    function base64ToBytes(base64) {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes;
+    }
+
+    function bytesToBase64(bytes) {
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+    }
+
+    async function convertGdbZipToGpkg(base64Zip, fileName) {
+        const Gdal = await ensureGdal();
+        const zipBytes = base64ToBytes(base64Zip);
+
+        // TODO (paso 2 de arriba): descomprimir zipBytes en memoria con fflate/JSZip,
+        // y construir un array de objetos File a partir de cada entrada descomprimida,
+        // preservando su nombre (ej. "capas.gdb/a0000009.gdbtable"). Sin este paso,
+        // Gdal.open() no puede leer el contenido del .gdb — la línea de abajo es un
+        // placeholder que NO funciona todavía.
+        const files = [ new File([zipBytes], fileName) ]; // <- reemplazar por los archivos descomprimidos
+
+        const result = await Gdal.open(files);
+        const dataset = result.datasets[0];
+
+        // Equivalente a: ogr2ogr -f GPKG salida.gpkg entrada.gdb
+        const options = ['-f', 'GPKG'];
+        const output = await Gdal.ogr2ogr(dataset, options);
+        const outBytes = await Gdal.getFileBytes(output);
+
+        return bytesToBase64(outBytes);
+    }
+
+    // Punto de entrada llamado desde Kotlin vía evaluateJavascript().
+    async function convertGdbZipToGpkgSafe(base64Zip, fileName) {
+        try {
+            const base64Gpkg = await convertGdbZipToGpkg(base64Zip, fileName);
+            if (window.AndroidBridge) window.AndroidBridge.onConversionComplete(base64Gpkg);
+        } catch (e) {
+            if (window.AndroidBridge) window.AndroidBridge.onConversionError(String(e));
+        }
+    }
+</script>
+</body>
+</html>
