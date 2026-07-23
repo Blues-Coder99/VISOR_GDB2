@@ -6,6 +6,7 @@ import mil.nga.geopackage.db.GeoPackageDataType
 import mil.nga.geopackage.db.TableColumnKey
 import mil.nga.geopackage.features.columns.GeometryColumns
 import mil.nga.geopackage.features.user.FeatureColumn
+import mil.nga.geopackage.features.user.FeatureTableMetadata
 import mil.nga.geopackage.geom.GeoPackageGeometryData
 import mil.nga.sf.GeometryType
 import mil.nga.sf.LineString
@@ -46,12 +47,14 @@ object DigitizingHelper {
         geometryColumns.geometryType = type
         geometryColumns.z = 0
         geometryColumns.m = 0
+        geometryColumns.srsId = srs.id
 
         val columns = attributeColumns.ifEmpty { listOf("nombre") }
             .map { FeatureColumn.createColumn(it, GeoPackageDataType.TEXT) }
 
         val worldBounds = BoundingBox(-180.0, -90.0, 180.0, 90.0)
-        geoPackage.createFeatureTableWithMetadata(geometryColumns, columns, worldBounds, srs.id)
+        val metadata = FeatureTableMetadata.create(geometryColumns, columns, worldBounds)
+        geoPackage.createFeatureTable(metadata)
         return true
     }
 
